@@ -1,4 +1,4 @@
-# 系統架構
+# CentralSeat 系統架構
 
 [回到專案首頁](README.md) · [環境設定與本機啟動](SetUp_Guide.md)
 

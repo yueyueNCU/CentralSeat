@@ -17,7 +17,7 @@ from app.routers.table import table_router, get_table_service
 from app.repositories.fake_all_repo import get_memory_queue_service, get_memory_map_service, get_memory_table_service
 
 app = FastAPI(
-    title="排隊系統 API (Dev Mode)",
+    title="CentralSeat API (Dev Mode)",
     description="目前使用記憶體模擬資料庫，重啟後資料會重置",
     version="0.1.0"
 )

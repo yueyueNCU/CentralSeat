@@ -1,4 +1,4 @@
-# 開發規範與 Git 協作指南
+# CentralSeat 開發規範與 Git 協作指南
 
 [回到專案首頁](../README.md) · [環境設定與本機啟動](../SetUp_Guide.md)
 
