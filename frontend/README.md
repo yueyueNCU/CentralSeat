@@ -1,6 +1,8 @@
-# frontend
+# CentralSeat 前端
 
-This template should help get you started developing with Vue 3 in Vite.
+CentralSeat 的顧客端與店家端，使用 Vue 3、TypeScript 與 Vite 開發，提供餐廳地圖、線上候位、排隊查詢及座位管理介面。
+
+[專案介紹與畫面預覽](../README.md) · [環境設定與本機啟動](../SetUp_Guide.md)
 
 ## Recommended IDE Setup
 

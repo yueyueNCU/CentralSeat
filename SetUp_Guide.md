@@ -1,4 +1,4 @@
-# 環境設定與本機啟動
+# CentralSeat 環境設定與本機啟動
 
 [回到專案首頁](README.md) · [開發規範與 Git 協作](docs/DEVELOPMENT.md)
 
