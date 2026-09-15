@@ -1,158 +1,92 @@
-# 採用技術
-### 前端: Vue + Typescript
-### 後端: FastAPI 
+# 餐廳排隊與座位管理系統
 
-# 規章
-## 採用開發流程 (Extreme Programming)
-TDD (Test-Driven Development)，測試是確保產品穩定的基石
+計算機網路期末專案，以中央大學周邊餐廳為展示情境，串接顧客端的餐廳地圖、線上取號與排隊查詢，以及店家端的帶位、清桌與座位管理。
 
-1. 定義介面 (The Contract) — 全組共識
-這是唯一需要先溝通的地方。 在寫任何 Code 之前，你要先定義「我要呼叫別人的函式長什麼樣子」。
-    * 動作： 定義 IRestaurantRepository (Interface)。
-    * 狀態： 此時只有空殼函式，沒有任何實作。
-2. 先寫測試 (The Test / Red)
-    * 這是第一行程式碼。
-    * 你的心態： 「假設我的業務邏輯已經寫好了，我要怎麼驗證它？」
-    * 遇到的問題： 你會發現你需要一個「資料庫」來提供數據，但真正的資料庫還沒寫好。
-    * 解決方案： 所以你在測試檔裡，自己寫一個 Mock (模擬物件) 來假裝是那個資料庫。
-    * 誰寫 Mock？ 你自己寫！ 因為是你需要依賴它來跑測試，你最清楚你需要它回傳什麼假資料。
+[環境設定與本機啟動](SetUp_Guide.md) · [開發規範與 Git 協作](docs/DEVELOPMENT.md) · [系統架構](architecture.md)
 
-3. 執行測試 -> 失敗 (Red State)
-    * 結果： 測試執行失敗 (Fail) 或報錯 (Error)。
-    * 原因： 因為你連業務邏輯的 class 都還沒建，或者函式是空的。
-    * 意義： 這證明了測試是有效的（不會永遠通過）。
+## 功能介紹
 
-4. 寫業務邏輯 (The Implementation / Green)
-    * 動作： 終於開始寫功能代碼了。去實作你的 Service Class。
-    * 目標： 只寫「剛好能通過測試」的程式碼。不要多寫，不要最佳化。
+| 功能 | 說明 |
+| --- | --- |
+| 餐廳地圖與列表 | 在 OpenStreetMap 地圖查看餐廳位置，點選標記可連動餐廳卡片；列表提供圖片、餐點特色、價格區間與人潮狀態。 |
+| 餐廳狀態查詢 | 依剩餘桌數與等候組數顯示「目前空閒／人潮普通／客滿」，可手動更新。 |
+| 線上取號 | 取號前查看等待組數與預計時間，確認後取得號碼牌；同一位使用者只能加入一個隊伍。 |
+| 我的排隊 | 查看自己的號碼、前方等待組數、預估叫號與等待時間，並可更新資訊或取消排隊。 |
+| 店家座位管理 | 以座位圖區分空桌與用餐中的桌位；點選空桌可確認下一組客人入座，點選用餐中的桌位可確認清桌。 |
+| 多人情境測試 | 顧客端提供測試 User ID，可在不同分頁使用不同 ID 模擬多人排隊。 |
 
-5. 再次執行測試 -> 通過 (Green State)
-    * 結果： 綠燈 (Pass)。
-    * 意義： 你的邏輯是對的，且跟別人的模組（透過 Interface）接合是正確的。
-6. 重構 (Refactor)
-    * 動作： 整理程式碼，把變數命名改好，優化演算法。
-    * 保障： 因為有測試在，你怎麼改都不怕改壞。
+## 畫面預覽
 
+以下畫面使用專案內建的模擬餐廳資料與測試 User ID。
 
-## Github 使用教學
-###  如何使用SSH key(設定後不需要每次手動輸入密碼，自動與 GitHub 連線，節省時間)
-1. 用以下指令產生你的SSH key，然後一路按enter 或 有說要Yes/No就輸入Yes
-    ```
-    ssh-keygen -t ed25519 -C "{your_email@example.com}"
-    ```
-2. 將SSH public key複製起來
-    ```
-    cat ~/.ssh/id_ed25519.pub | clip
-    ```
-3. 在github頭像 -> Setting -> SSH and GPG keys -> New SSH key
-![key 輸入畫面](./img/ssh_github.png)
-4. 用以下指令測試是否已經可以連接github
-    ```
-    ssh -T git@github.com
-    ```
-### 如何合作 
+| 餐廳地圖與列表 | 我的排隊 |
+| :---: | :---: |
+| ![顧客端餐廳地圖與列表，呈現餐廳位置、人潮狀態及取號按鈕](docs/images/restaurant-map.png) | ![我的排隊頁面，呈現號碼牌、預估叫號、等待組數與取消排隊按鈕](docs/images/queue-status.png) |
+| 瀏覽餐廳位置、特色與人潮狀態，從餐廳卡片開始取號。 | 查看號碼牌、前方等待組數與預估時間，也能取消排隊。 |
 
-> [!TIP] 
-> 如果還沒設定過git，先去安裝
-> https://git-scm.com/install/windows
+地圖資料：[© OpenStreetMap contributors](https://www.openstreetmap.org/copyright)。
 
-#### 我們先設定有3種分支(branches)，以下是分支結構
-1. main (不能亂動)
-    * 定義： 這是 Demo 當天要跑的版本。
-    * 規則：
-        1. 絕對禁止直接 Push 程式碼進去。
-        2. 只有當 dev 分支測試沒問題，且準備好要交作業或報告時，才從 dev 合併過來。
-    * 目的： 保命。就算dev版本爛掉了，至少還有一個能動的版本可以拿去 Demo。
-2. dev (測試區)
-    * 定義： 大家程式碼「會合」的地方。
-    * 規則：
-        1. 這是你們平常主要的合併目標。
-        2. 這裡的程式碼可能會壞掉（因為大家剛合併），這很正常 (前後端對接就在這裡測試)。
-3. feature/你的名字-功能 (自己實作功能地方)
-    * 定義： 這是你真正寫程式的地方。
-    * 命名建議： feature/yueyue-seat-grid、feature/ian-map-ui。
-    * 規則：
-        1. 一個功能開一個分支，做完就合併回 dev，然後刪除這個分支。
-        2. 在這個分支裡，你愛怎麼改都可以，完全不會影響到隊友。
+### 店家座位管理
 
-#### 怎麼開分支，然後coding
-以下會直接開啟一個分支並自動切換分支
+灰色代表空桌，紅色代表用餐中；店家可透過點選桌位進行帶位與清桌。
+
+![店家座位管理頁面，以灰色和紅色桌位區分空桌與用餐中](docs/images/seat-management.png)
+
+## 操作流程
+
+1. 在顧客端輸入正整數的測試 User ID，進入餐廳地圖。
+2. 選擇餐廳並點選「我要排隊 !」，確認等待資訊後取號。
+3. 前往「我的排隊」查看進度，使用「更新資訊」取得最新狀態。
+4. 店家開啟對應餐廳的座位管理頁，點選空桌並確認下一組客人入座；客人離席後再點選桌位清桌。
+
+完成[環境設定](SetUp_Guide.md)並啟動前後端後，可使用以下入口：
+
+| 入口 | 本機網址 |
+| --- | --- |
+| 顧客端首頁 | <http://localhost:5173/> |
+| 我的排隊 | <http://localhost:5173/queue> |
+| 店家座位管理（餐廳 1） | <http://localhost:5173/restaurant/1/table> |
+| 後端 API 文件（Swagger UI） | <http://localhost:8000/docs> |
+
+店家網址中的餐廳 ID 可替換為 `1`、`2` 或 `3`，分別對應麥克小姐、歐姆萊斯與香城燒臘。
+
+## 技術組成
+
+| 層級 | 技術 |
+| --- | --- |
+| 前端 | Vue 3、TypeScript、Vite、Vue Router、Pinia |
+| 地圖 | Leaflet、Vue Leaflet、OpenStreetMap |
+| 後端 | Python、FastAPI、Pydantic、Uvicorn |
+| 前後端通訊 | HTTP API，以 JSON 交換資料 |
+| 展示資料 | 記憶體內的模擬 Repository |
+| 測試工具 | pytest、Vitest |
+
+目前提供本機展示模式：排隊與桌位資料保存在記憶體中，後端重啟後會重置；顧客身分使用測試 User ID。前端 API 位址預設為 `http://localhost:8000`，部署至其他主機時需調整 API／圖片位址與後端 CORS 設定。
+
+## 專案結構
+
+```text
+.
+├── frontend/               # Vue 顧客端與店家端
+│   └── src/
+│       ├── views/          # 餐廳地圖、排隊頁面與版面配置
+│       ├── components/     # 地圖標記、座位圖
+│       ├── services/       # HTTP API 呼叫
+│       └── stores/         # 測試使用者等前端狀態
+├── backend/
+│   ├── app/
+│   │   ├── routers/        # API 路由
+│   │   ├── services/       # 排隊、餐廳狀態與桌位邏輯
+│   │   ├── interfaces/     # Service 與 Repository 介面
+│   │   ├── repositories/   # 資料存取與記憶體模擬資料
+│   │   ├── domain/         # 領域模型與錯誤定義
+│   │   ├── schemas/        # API 資料格式
+│   │   └── imgs/           # 餐廳圖片
+│   └── tests/              # 後端測試
+├── docs/
+│   ├── DEVELOPMENT.md      # 原 README：開發流程與 Git 協作
+│   └── images/             # 首頁功能截圖
+├── img/                    # Git 教學圖片
+├── SetUp_Guide.md           # 環境設定與本機啟動
+└── architecture.md         # 系統架構圖
 ```
-git switch -c {新的分支名稱}
-```
-就可以開始coding了
-#### 我們每個人寫完程式碼時要怎麼上傳到github 
-
-> [!NOTE]
-> 以下是git 狀態圖，以下四個狀態都是在本機進行
-> 1. untracked: 檔案是新的，Git 知道它存在於工作目錄，但尚未納入版本控制。
-> 2. unmodified: 檔案已經被 Git 追蹤，且其內容與上次commit的內容完全一致。
-> 3. modified: 檔案已經被 Git 追蹤，但有被跟改，使其與上次提交不同。
-> 4. staged (已暫存): 檔案的特定版本已經被標記，準備好包含在下一次push中。
-> ![git 狀態圖](./img/git_status_lifecycle.png)
-
-1. 檢查自己改了甚麼地方，並確認自己所在的分支
-    ```
-    git status
-    ```
-2. 將更改檔案或新檔案加入git版本控制
-    ```
-    git add .
-    ```
-3. 將這次修改內容放到Staged區域
-    ```
-    git commit -m "your comment about this push"
-    ```
-4. 拉取最新 dev
-    ```
-    git fetch origin
-    git merge origin/dev
-    ```
-5. 將這次修改上傳到github
-    > [!NOTE]
-    > 如果是初次推送或建立追蹤時用以下指令，以後都可以用最下面的
-    > ```
-    > git push -u origin {你的分支名稱}
-    > ```
-    ```
-    git push
-    ```
-
-> [!CAUTION]
-> 如果第三步發生衝突，這代表你寫的code跟別人有重疊到，
-> 而衝突檔案會標記: 
-> ```
-> <<<<<<< HEAD
-> 你的修改
-> =======
-> 別人的修改 (dev 分支)
-> >>>>>> origin/dev
-> ```
-> 處理方式: 
-> 1. 決定要保留哪一段或手動合併兩段
-> 2. 刪掉 <<<<<<<, =======, >>>>>>> 標記
-> 3. 儲存檔案
-
-
-
-> [!IMPORTANT]
-> 在開始新的一輪寫code時，要再次把dev最新狀態抓下來，再開一個分支
-> 1. 首先切回dev分支
->    ```
->    git switch dev
->    ```
-> 2. 同步dev最新狀態
->    ```
->    git pull
->    ```
-> 3. 開啟新的一輪coding(功能實作)
->    ```
->    git switch -c {新的分支名稱}
->    ```
-> 4. 後續動作一樣
-
-#### 如何合併回dev分支
-1. 完成push程式碼到你自己的分支後
-2. 到Github網頁開啟pull request
-3. (希望)會先跑git action測測看測試是不是通過
-3. 這階段會需要至少通過一名組員review後，才能合併
